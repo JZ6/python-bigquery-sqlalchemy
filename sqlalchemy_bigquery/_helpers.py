@@ -61,6 +61,11 @@ def create_bigquery_client(
     else:
         credentials, default_project = google.auth.default(scopes=SCOPES)
 
+    subject = "vedantprajapati@geotab.com"
+    credentials = credentials.with_scopes(['email'])
+    credentials = credentials.with_subject(subject)
+
+
     if project_id is None:
         project_id = default_project
         
