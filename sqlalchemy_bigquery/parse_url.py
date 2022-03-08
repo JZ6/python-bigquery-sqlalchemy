@@ -28,7 +28,8 @@ from google.cloud.bigquery.job import (
     SchemaUpdateOption,
 )
 from google.cloud.bigquery.table import EncryptionConfiguration, TableReference
-
+import logging
+logger = logging.getLogger(__name__)
 GROUP_DELIMITER = re.compile(r"\s*\,\s*")
 KEY_VALUE_DELIMITER = re.compile(r"\s*\:\s*")
 
@@ -70,7 +71,8 @@ def parse_url(url):  # noqa: C901
     credentials_path = None
     credentials_base64 = None
     list_tables_page_size = None
-
+    logger.critical("url: %s", url)
+    logger.critical("url_vars: %s", vars(url))
     # location
     if "location" in query:
         location = query.pop("location")
