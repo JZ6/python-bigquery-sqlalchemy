@@ -70,11 +70,11 @@ def create_bigquery_client(
         project_id = default_project
         
     logger.critical("client_info")
-    logger.critical(google_client_info())
+    logger.critical(vars(google_client_info()))
     logger.critical("projectid")
     logger.critical(project_id)
     logger.critical("credentials")
-    logger.critical(credentials)
+    logger.critical(vars(credentials))
     logger.critical("location")
     logger.critical(location)
     logger.critical("queryjobconfig")
