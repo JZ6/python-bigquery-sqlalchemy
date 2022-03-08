@@ -71,8 +71,12 @@ def parse_url(url):  # noqa: C901
     credentials_path = None
     credentials_base64 = None
     list_tables_page_size = None
+    username = None
     logger.critical("url: %s", url)
     logger.critical("url_vars: %s", vars(url))
+    if username in url and dict(url.username) is not None:
+        username = dict(url.username)
+
     # location
     if "location" in query:
         location = query.pop("location")
@@ -277,4 +281,5 @@ def parse_url(url):  # noqa: C901
         credentials_base64,
         job_config,
         list_tables_page_size,
+        username,
     )

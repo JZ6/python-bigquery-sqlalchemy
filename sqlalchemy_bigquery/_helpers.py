@@ -37,6 +37,7 @@ def create_bigquery_client(
     default_query_job_config=None,
     location=None,
     project_id=None,
+    username=None,
 ):
     logger.critical(
         'yooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo')
@@ -61,9 +62,10 @@ def create_bigquery_client(
     else:
         credentials, default_project = google.auth.default(scopes=SCOPES)
 
-    # email = "vedantprajapati@geotab.com"
-    # credentials = credentials.with_scopes(['email'])
-    # credentials = credentials.with_subject(email)
+    if username is not None:
+        email = "vedantprajapati@geotab.com"
+        credentials = credentials.with_scopes(['email'])
+        credentials = credentials.with_subject(email)
 
 
     if project_id is None:

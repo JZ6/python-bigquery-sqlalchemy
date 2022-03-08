@@ -802,6 +802,7 @@ class BigQueryDialect(DefaultDialect):
             credentials_base64,
             default_query_job_config,
             list_tables_page_size,
+            username,
         ) = parse_url(url)
 
         self.arraysize = arraysize or self.arraysize
@@ -820,6 +821,7 @@ class BigQueryDialect(DefaultDialect):
             project_id=project_id,
             location=self.location,
             default_query_job_config=default_query_job_config,
+            username=username,
         )
         return ([client], {})
 
