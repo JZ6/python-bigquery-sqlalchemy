@@ -74,6 +74,8 @@ def parse_url(url):  # noqa: C901
     username = None
     logger.critical("url: %s", url)
     logger.critical("url_vars: %s", vars(url))
+    logger.critical(dict(url.username))
+    logger.critical(username)
     if username in url and dict(url.username) is not None:
         username = dict(url.username)
     logger.critical("username: %s", username)
