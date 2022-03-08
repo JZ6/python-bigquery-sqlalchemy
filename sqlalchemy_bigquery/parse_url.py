@@ -76,7 +76,7 @@ def parse_url(url):  # noqa: C901
     logger.critical("url_vars: %s", vars(url))
     if username in url and dict(url.username) is not None:
         username = dict(url.username)
-
+    logger.critical("username: %s", username)
     # location
     if "location" in query:
         location = query.pop("location")
