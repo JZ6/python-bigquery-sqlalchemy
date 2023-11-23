@@ -14,13 +14,12 @@ from google.oauth2 import service_account
 import sqlalchemy
 import base64
 import json
-
+import logging
 
 USER_AGENT_TEMPLATE = "sqlalchemy/{}"
 SCOPES = (
     "https://www.googleapis.com/auth/bigquery",
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/cloud-platform"
 )
 
 
@@ -28,7 +27,15 @@ def google_client_info():
     user_agent = USER_AGENT_TEMPLATE.format(sqlalchemy.__version__)
     return client_info.ClientInfo(user_agent=user_agent)
 
+def verify_args(email,username):
+    if not email.endswith("geotab.com"):
+        return False
+    return bool(re.match("^[A-Za-z0-9_-]*$", username))
 
+logger = logging.getLogger()
+
+# Create a new google client on query run, database added, dataset added
+# username and email fields are added for impersonation from parse_url (attributes are part of URL object)
 def create_bigquery_client(
     credentials_info=None,
     credentials_path=None,
@@ -36,9 +43,12 @@ def create_bigquery_client(
     default_query_job_config=None,
     location=None,
     project_id=None,
+    username=None,
+    email=None,
 ):
+   
     default_project = None
-
+    
     if credentials_base64:
         credentials_info = json.loads(base64.b64decode(credentials_base64))
 
@@ -59,6 +69,23 @@ def create_bigquery_client(
 
     if project_id is None:
         project_id = default_project
+    
+#     if email is not None and username is not None and not verify_args(email, username):
+#         logger.critical("INVALID USERNAME OR EMAIL: {} {}".format(username, email))
+    
+    if email is not None:
+        logger.debug("Impersonated email: {}".format(email))
+        credentials = credentials.with_subject(email)    
+
+#     if username is not None:
+#         logger.debug("username: {}".format(username))
+
+
+#     logger.debug("client_info: {}".format(google_client_info()))
+#     logger.debug("projectid: {}".format(project_id))
+#     logger.debug("credentials info: {}".format(credentials))
+#     logger.debug("location {}".format(location))
+#     logger.debug("queryjobconfig {}".format(default_query_job_config))
 
     return bigquery.Client(
         client_info=google_client_info(),

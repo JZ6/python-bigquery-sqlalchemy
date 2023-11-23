@@ -18,6 +18,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import re
+import logging
 
 from google.cloud.bigquery import QueryJobConfig
 from google.cloud.bigquery.dataset import DatasetReference
@@ -31,7 +32,7 @@ from google.cloud.bigquery.table import EncryptionConfiguration, TableReference
 
 GROUP_DELIMITER = re.compile(r"\s*\,\s*")
 KEY_VALUE_DELIMITER = re.compile(r"\s*\:\s*")
-
+logger = logging.getLogger()
 
 def parse_boolean(bool_string):
     bool_string = bool_string.lower()
@@ -45,6 +46,7 @@ def parse_boolean(bool_string):
 
 def parse_url(url):  # noqa: C901
     query = dict(url.query)  # need mutable query.
+    username, email = None, None
 
     # use_legacy_sql (legacy)
     if "use_legacy_sql" in query:
@@ -62,7 +64,15 @@ def parse_url(url):  # noqa: C901
     # maximum_billing_tier (deprecated)
     if "maximum_billing_tier" in query:
         raise ValueError("maximum_billing_tier is a deprecated argument")
-
+    
+    if hasattr(url, 'username'):
+        username = url.username or None
+        logger.critical(f'parse_url.py username: {username}')
+        
+    if hasattr(url, 'email'):
+        email = url.email or None
+        logger.critical(f'parse_url.py email: {email}')
+    
     project_id = url.host
     location = None
     dataset_id = url.database or None
@@ -70,6 +80,7 @@ def parse_url(url):  # noqa: C901
     credentials_path = None
     credentials_base64 = None
     list_tables_page_size = None
+    
 
     # location
     if "location" in query:
@@ -115,6 +126,8 @@ def parse_url(url):  # noqa: C901
                 credentials_base64,
                 QueryJobConfig(),
                 list_tables_page_size,
+                username,
+                email,
             )
         else:
             return (
@@ -126,6 +139,8 @@ def parse_url(url):  # noqa: C901
                 credentials_base64,
                 None,
                 list_tables_page_size,
+                username,
+                email,
             )
 
     job_config = QueryJobConfig()
@@ -275,4 +290,6 @@ def parse_url(url):  # noqa: C901
         credentials_base64,
         job_config,
         list_tables_page_size,
+        username,
+        email,
     )
